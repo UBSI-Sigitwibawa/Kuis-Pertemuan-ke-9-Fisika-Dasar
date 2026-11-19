@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuis Fisika Dasar – Pertemuan 9: Kerja dan Energi</title>
+<style>
+:root{--navy:#0b2a5b;--navy2:#143d80;--gold:#f2b705;--bg:#eef3fa;--ink:#16202e;--mut:#5a6677;--ok:#1b7f4b;--okbg:#e4f5ec;--bad:#b3261e;--badbg:#fdeaea;--line:#d3dcea}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{background:var(--navy);color:#fff;border-bottom:6px solid var(--gold);padding:22px 16px}
+header .in{max-width:820px;margin:auto}
+header h1{margin:0 0 4px;font-size:1.6rem;letter-spacing:.2px}
+header p{margin:0;opacity:.85}
+main{max-width:820px;margin:22px auto;padding:0 14px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input{width:100%;padding:11px 12px;border:1px solid #b8c4d8;border-radius:8px;font:inherit}
+input:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:12px 22px;cursor:pointer;background:var(--navy);color:#fff}
+button:hover{background:var(--navy2)}
+button.gold{background:var(--gold);color:#1a1a1a}
+button.ghost{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.err{color:var(--bad);font-weight:600;margin-top:10px;min-height:1.2em}
+ul.rules{margin:8px 0 0;padding-left:20px;color:var(--mut)}
+#bar{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;padding:10px 14px;display:flex;gap:14px;align-items:center;font-size:.92rem}
+#bar .who{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#track{flex:0 0 38%;height:8px;background:#ffffff33;border-radius:4px;overflow:hidden}
+#fill{height:100%;width:0;background:var(--gold);transition:width .2s}
+.q{padding:18px 20px}
+.q h3{margin:0 0 10px;font-size:1.02rem;font-weight:600}
+.q h3 span{color:var(--navy2);margin-right:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border:1px solid var(--line);border-radius:8px;margin:6px 0;cursor:pointer}
+.opt:hover{border-color:var(--navy2);background:#f6f9ff}
+.opt input{width:auto;margin-top:5px}
+.opt.sel{border-color:var(--navy);background:#eaf1fd}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt.static{cursor:default}
+.exp{margin-top:10px;padding:10px 12px;border-left:4px solid var(--gold);background:#fff9e3;border-radius:0 8px 8px 0;font-size:.95rem}
+.tag{font-weight:700;font-size:.85rem}
+.tag.ok{color:var(--ok)}.tag.bad{color:var(--bad)}
+.score{text-align:center}
+.score .n{font-size:3.6rem;font-weight:800;color:var(--navy);line-height:1}
+.score .pred{font-weight:700;margin-top:4px}
+table.id{border-collapse:collapse;margin:0 0 14px}
+table.id td{padding:3px 14px 3px 0;vertical-align:top}
+.stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.stats div{background:var(--bg);border-radius:8px;padding:8px 16px;font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.hide{display:none!important}
+@media print{
+ body{background:#fff;font-size:12px}
+ header{padding:10px 14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #bar,.actions,.noprint{display:none!important}
+ .card{break-inside:avoid;border-color:#999;margin-bottom:8px;padding:12px}
+ .opt.right,.opt.wrong,.exp{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ main{margin:8px auto;padding:0}
+}
+</style>
+</head>
+<body>
+<header><div class="in">
+ <h1>Kuis Fisika Dasar – Pertemuan ke-9</h1>
+ <p>Kerja dan Energi · Program Studi Teknik Industri · Universitas Bina Sarana Informatika</p>
+</div></header>
+
+<div id="bar" class="hide"><div class="who" id="who"></div><div id="cnt">0/30</div><div id="track"><div id="fill"></div></div></div>
+
+<main>
+ <section id="s-id" class="card">
+  <h2 style="margin-top:0">Data Mahasiswa</h2>
+  <label for="nama">Nama lengkap</label><input id="nama" autocomplete="name">
+  <label for="nim">NIM</label><input id="nim" inputmode="numeric" autocomplete="off">
+  <label for="prodi">Program studi</label><input id="prodi" value="Teknik Industri">
+  <ul class="rules">
+   <li>30 soal pilihan ganda tentang usaha, energi, daya, dan efisiensi.</li>
+   <li>Kuis hanya dapat dikerjakan satu kali untuk setiap NIM pada perangkat ini.</li>
+   <li>Setelah dikirim, nilai dan pembahasan setiap soal langsung ditampilkan. Gunakan g = 10 m/s².</li>
+  </ul>
+  <div class="err" id="err"></div>
+  <button id="start" class="gold">Mulai kuis</button>
+ </section>
+
+ <section id="s-quiz" class="hide">
+  <div id="qs"></div>
+  <div class="card" style="text-align:center">
+   <div class="err" id="err2"></div>
+   <button id="submit" class="gold">Kirim jawaban</button>
+  </div>
+ </section>
+
+ <section id="s-res" class="hide"></section>
+</main>
+
+<script>
+const Q=[
+["Besaran berikut yang merupakan besaran skalar adalah…",["Gaya (F = 50 N ke kanan)","Kecepatan (v = 10 m/s ke kanan)","Energi (E = 500 J)","Perpindahan (s = 3 m ke kanan)"],2,"Skalar hanya memiliki nilai dan satuan, tanpa arah. Energi 500 J tidak memiliki arah, sedangkan gaya, kecepatan, dan perpindahan adalah vektor."],
+["Besaran yang memiliki banyak komponen dan menggambarkan hubungan besaran dalam berbagai arah, misalnya tegangan (stress) pada benda, disebut…",["Skalar","Vektor","Tensor","Konstanta"],2,"Tensor memiliki banyak komponen (multi-arah). Contohnya tensor tegangan yang menggambarkan tegangan pada arah x, y, dan z."],
+["Gaya (vektor) dan perpindahan (vektor) dikalikan secara dot product (W = F · s). Hasilnya berupa besaran…",["Vektor","Skalar","Tensor","Percepatan"],1,"Dot product dua vektor menghasilkan skalar. Karena itu usaha (kerja) adalah besaran skalar, satuannya Joule."],
+["Benda di atas conveyor bergerak dengan kecepatan tetap 2 m/s. Perpindahan benda dalam 5 s adalah…",["7 m","10 m","12 m","25 m"],1,"GLB: s = v · t = 2 × 5 = 10 m."],
+["Sebuah mobil bergerak dari diam (v₀ = 0) dengan percepatan 2 m/s² selama 4 s. Kecepatan akhirnya adalah…",["4 m/s","6 m/s","8 m/s","16 m/s"],2,"GLBB: vₜ = v₀ + at = 0 + 2 × 4 = 8 m/s."],
+["Barang di atas conveyor bergerak dengan kecepatan konstan. Menurut Hukum I Newton, kondisi ini berarti…",["Resultan gaya pada barang sama dengan nol","Gaya dorong lebih besar daripada gaya hambat","Percepatan barang terus bertambah","Resultan gaya searah dengan gerak barang"],0,"Hukum I Newton (inersia): jika ΣF = 0, benda tetap diam atau bergerak lurus dengan kecepatan tetap."],
+["Pekerja mendorong peti 50 kg dengan gaya 200 N (gesekan diabaikan). Percepatan peti adalah…",["2 m/s²","4 m/s²","10 m/s²","250 m/s²"],1,"Hukum II Newton: a = ΣF / m = 200 / 50 = 4 m/s²."],
+["Lengan robot memberi gaya pada benda, dan benda memberi gaya reaksi pada lengan robot. Mengapa pasangan aksi–reaksi tidak saling meniadakan?",["Besarnya berbeda","Arahnya sama","Bekerja pada dua benda yang berbeda","Hanya terjadi ketika benda diam"],2,"Hukum III Newton: F_aksi = −F_reaksi, tetapi keduanya bekerja pada dua benda yang berbeda, sehingga tidak dijumlahkan pada benda yang sama."],
+["Pekerja mendorong dinding bata dengan kuat, tetapi dinding tidak berpindah. Usaha yang dilakukan pekerja adalah…",["Positif dan besar","Negatif","0 Joule, karena perpindahan nol","Tak terhingga"],2,"Gaya ada tetapi perpindahan s = 0, sehingga W = F × s = 0. Gaya tanpa gerak tidak menghasilkan kerja mekanik."],
+["Dimensi usaha (W = F × s) adalah…",["MLT⁻²","ML²T⁻²","ML²T⁻³","MT⁻²"],1,"Gaya berdimensi MLT⁻² dan perpindahan berdimensi L, sehingga usaha berdimensi ML²T⁻². Satuannya Joule (1 N × 1 m)."],
+["Lengan derek menahan beban sambil bergerak mendatar, sehingga gaya angkat tegak lurus perpindahan (θ = 90°). Usaha oleh gaya angkat tersebut adalah…",["W = F × s","W = −F × s","W = 0","W = 2F × s"],2,"W = F · s · cos 90° = 0. Gaya yang tegak lurus perpindahan tidak berkontribusi pada usaha."],
+["Roda mengerem dan bergesekan dengan lantai. Gaya gesek berlawanan arah dengan perpindahan (θ = 180°). Usaha oleh gaya gesek adalah…",["Positif maksimum","Nol","Negatif (W = −F × s)","Tidak dapat ditentukan"],2,"cos 180° = −1, sehingga W = −F × s. Usaha negatif berarti gaya menghambat gerak."],
+["Jika gaya searah dengan perpindahan (θ = 0°) dan F = m × a, rumus usaha dapat ditulis…",["W = m × a × s","W = m × s / a","W = m × a / s","W = m × a × t"],0,"W = F · s · cos 0° = F · s. Substitusi F = m · a menghasilkan W = m · a · s. Percepatan muncul setelah F dinyatakan dengan Hukum II Newton."],
+["Gaya 100 N menarik peti sejauh 5 m dengan sudut 60° terhadap arah perpindahan (cos 60° = 0,5). Usaha yang dilakukan adalah…",["500 J","433 J","250 J","50 J"],2,"W = F · s · cos θ = 100 × 5 × 0,5 = 250 J."],
+["Energi didefinisikan sebagai…",["Laju usaha yang dilakukan","Kapasitas atau kemampuan sistem untuk melakukan kerja (usaha)","Hasil kali gaya dan waktu","Perbandingan keluaran terhadap masukan"],1,"Energi adalah kapasitas sistem untuk melakukan usaha. Laju usaha adalah daya, dan rasio keluaran terhadap masukan adalah efisiensi."],
+["Pernyataan yang sesuai dengan Hukum Kekekalan Energi adalah…",["Energi dapat diciptakan oleh mesin yang efisien","Energi dapat dimusnahkan oleh gesekan","Energi tidak dapat diciptakan atau dimusnahkan, hanya ditransformasikan atau ditransfer","Energi selalu seluruhnya berubah menjadi panas"],2,"Energi hanya berubah bentuk atau berpindah. Pada gesekan, energi mekanik berubah menjadi panas, bukan hilang."],
+["Barang 20 kg diletakkan pada rak setinggi 3 m (g = 10 m/s²). Energi potensial gravitasinya adalah…",["60 J","200 J","600 J","6.000 J"],2,"Ep = m · g · h = 20 × 10 × 3 = 600 J."],
+["Pegas pada mesin press memiliki k = 200 N/m dan ditekan sejauh x = 0,1 m. Energi potensial pegasnya adalah…",["0,1 J","1 J","2 J","20 J"],1,"Ep = ½ k x² = ½ × 200 × (0,1)² = ½ × 200 × 0,01 = 1 J."],
+["Forklift 500 kg melaju dengan kecepatan 10 m/s. Energi kinetiknya adalah…",["5.000 J","25.000 J","50.000 J","250.000 J"],1,"Ek = ½ m v² = ½ × 500 × 10² = ½ × 500 × 100 = 25.000 J."],
+["Jika kecepatan forklift dinaikkan menjadi 2 kali lipat dengan massa tetap, energi kinetiknya menjadi…",["2 kali lipat","3 kali lipat","4 kali lipat","8 kali lipat"],2,"Ek sebanding dengan v². Kecepatan 2× menghasilkan Ek 2² = 4× lipat."],
+["Motor listrik menaikkan energi kinetik forklift dari 2.000 J menjadi 5.000 J. Menurut teorema usaha–energi, usaha total yang dilakukan adalah…",["3.000 J","2.000 J","5.000 J","7.000 J"],0,"W_total = ΔEk = Ek_akhir − Ek_awal = 5.000 − 2.000 = 3.000 J."],
+["Mesin A dan Mesin B sama-sama mengangkat peti 100 kg setinggi 5 m (g = 10 m/s²). Mesin A membutuhkan 10 s, Mesin B 5 s. Usaha yang dilakukan masing-masing mesin adalah…",["A = 5.000 J, B = 10.000 J","A = 5.000 J, B = 5.000 J (sama)","A = 500 J, B = 1.000 J","A = 10.000 J, B = 5.000 J"],1,"W = m · g · h = 100 × 10 × 5 = 5.000 J untuk kedua mesin. Usaha sama karena beban dan ketinggian sama; yang berbeda adalah waktunya (daya)."],
+["Pada soal sebelumnya, daya Mesin B (menyelesaikan usaha dalam 5 s) adalah…",["500 W","1.000 W","5.000 W","25.000 W"],1,"P = W / t = 5.000 / 5 = 1.000 W. Daya Mesin A = 5.000 / 10 = 500 W, jadi daya Mesin B dua kali lebih besar."],
+["Sebuah gaya 400 N bekerja pada benda yang bergerak dengan kecepatan tetap 2 m/s searah gaya. Daya yang dihasilkan (P = F · v) adalah…",["200 W","402 W","1.600 W","800 W"],3,"P = F · v = 400 × 2 = 800 W."],
+["Motor conveyor memberi gaya F = 200 N sejauh s = 10 m dalam waktu t = 5 s. Daya motor adalah…",["400 W","2.000 W","40 W","1.000 W"],0,"W = F × s = 200 × 10 = 2.000 J. P = W / t = 2.000 / 5 = 400 W."],
+["Mesin CNC menerima daya masukan 2.000 W dan menghasilkan daya keluaran 1.600 W. Daya yang hilang sebagai panas dan getaran adalah…",["400 W","1.600 W","2.000 W","3.600 W"],0,"P_hilang = P_masuk − P_keluar = 2.000 − 1.600 = 400 W (20% dari masukan)."],
+["Motor listrik menarik daya 1.500 W dan mengeluarkan daya mekanik 1.200 W. Efisiensi motor adalah…",["70%","75%","80%","125%"],2,"η = (P_keluaran / P_masukan) × 100% = (1.200 / 1.500) × 100% = 80%."],
+["Kotak jatuh dari conveyor ke dalam bak (hambatan udara diabaikan). Sesaat sebelum menyentuh dasar bak, perbandingan energinya adalah…",["Ep = 100%, Ek = 0%","Ep = 0%, Ek = 100%","Ep = 50%, Ek = 50%","Ep = 0%, Ek = 0%"],1,"Menurut kekekalan energi mekanik (Em = Ek + Ep = konstan), seluruh energi potensial berubah menjadi energi kinetik di titik terendah."],
+["Kotak 2 kg jatuh bebas dari ketinggian 5 m (g = 10 m/s², hambatan udara diabaikan). Kecepatan sesaat sebelum mencapai dasar adalah…",["5 m/s","20 m/s","10 m/s","50 m/s"],2,"Ep awal = m g h = 2 × 10 × 5 = 100 J = Ek akhir = ½ × 2 × v². Maka v² = 100 sehingga v = 10 m/s."],
+["Pekerja mendorong troli dengan gaya 50 N sejauh 4 m searah gaya. Usaha yang dilakukan adalah…",["200 J","12,5 J","54 J","2.000 J"],0,"W = F · s = 50 × 4 = 200 J."]
+];
+const N=Q.length, L=["A","B","C","D"];
+const $=id=>document.getElementById(id);
+let me={}, ans=new Array(N).fill(-1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const key=nim=>"fd9_kerja_energi_"+nim;
+function load(nim){try{return JSON.parse(localStorage.getItem(key(nim)))}catch(e){return null}}
+function save(nim,d){try{localStorage.setItem(key(nim),JSON.stringify(d))}catch(e){}}
+
+$("start").onclick=()=>{
+ const nama=$("nama").value.trim(), nim=$("nim").value.trim(), prodi=$("prodi").value.trim();
+ if(!nama||!nim||!prodi){$("err").textContent="Lengkapi nama, NIM, dan program studi terlebih dahulu.";return}
+ if(!/^\d{6,15}$/.test(nim)){$("err").textContent="NIM harus berupa angka (6–15 digit).";return}
+ me={nama,nim,prodi};
+ const prev=load(nim);
+ if(prev){$("s-id").classList.add("hide");showResult(prev,true);return}
+ $("s-id").classList.add("hide");$("s-quiz").classList.remove("hide");$("bar").classList.remove("hide");
+ $("who").textContent=nama+" · "+nim;
+ build();window.scrollTo(0,0);
+};
+
+function build(){
+ $("qs").innerHTML=Q.map((q,i)=>`<div class="card q" id="q${i}"><h3><span>${i+1}.</span>${esc(q[0])}</h3>`+
+  q[1].map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}"><span><b>${L[j]}.</b> ${esc(o)}</span></label>`).join("")+`</div>`).join("");
+ document.querySelectorAll("#qs input").forEach(r=>r.onchange=()=>{
+  const i=+r.name.slice(1);ans[i]=+r.value;
+  document.querySelectorAll(`#q${i} .opt`).forEach((l,j)=>l.classList.toggle("sel",j===ans[i]));
+  prog();
+ });
+}
+function prog(){const d=ans.filter(a=>a>=0).length;$("cnt").textContent=d+"/"+N;$("fill").style.width=(d/N*100)+"%"}
+
+$("submit").onclick=()=>{
+ const miss=ans.map((a,i)=>a<0?i+1:null).filter(Boolean);
+ if(miss.length){
+  $("err2").textContent="Masih ada "+miss.length+" soal belum dijawab (nomor "+miss.join(", ")+"). Jawab semuanya, lalu kirim.";
+  document.getElementById("q"+(miss[0]-1)).scrollIntoView({behavior:"smooth",block:"center"});return}
+ if(!confirm("Kirim jawaban sekarang? Kuis hanya dapat dikerjakan satu kali."))return;
+ const d={...me,ans:ans.slice(),tgl:new Date().toLocaleString("id-ID",{dateStyle:"long",timeStyle:"short"})};
+ save(me.nim,d);showResult(d,false);
+};
+
+function showResult(d,again){
+ const benar=d.ans.filter((a,i)=>a===Q[i][2]).length, salah=N-benar;
+ const nilai=Math.round(benar/N*1000)/10;
+ const pred=nilai>=85?"Sangat baik":nilai>=70?"Baik":nilai>=60?"Cukup":"Perlu belajar lagi";
+ $("s-quiz").classList.add("hide");$("bar").classList.add("hide");
+ const r=$("s-res");r.classList.remove("hide");
+ document.title="Hasil Kuis Fisika Dasar P9 - "+d.nim+" - "+d.nama;
+ r.innerHTML=`<div class="card score">
+  ${again?'<div class="noprint err" style="margin:0 0 10px">NIM ini sudah mengerjakan kuis. Berikut hasil yang tersimpan.</div>':''}
+  <table class="id" style="margin:0 auto 14px;text-align:left"><tr><td>Nama</td><td>: <b>${esc(d.nama)}</b></td></tr><tr><td>NIM</td><td>: <b>${esc(d.nim)}</b></td></tr><tr><td>Program studi</td><td>: <b>${esc(d.prodi)}</b></td></tr><tr><td>Waktu</td><td>: ${esc(d.tgl)}</td></tr></table>
+  <div style="color:var(--mut)">Nilai akhir</div><div class="n">${nilai}</div><div class="pred">${pred}</div>
+  <div class="stats"><div style="color:var(--ok)">Benar: ${benar}</div><div style="color:var(--bad)">Salah: ${salah}</div><div>Total soal: ${N}</div></div>
+  <div class="actions"><button class="gold" onclick="window.print()">Simpan sebagai PDF</button><button class="ghost" onclick="document.getElementById('rev').scrollIntoView({behavior:'smooth'})">Lihat pembahasan</button></div>
+  <p class="noprint" style="color:var(--mut);font-size:.9rem;margin:10px 0 0">Pada jendela cetak, pilih tujuan “Simpan sebagai PDF”.</p>
+ </div>
+ <h2 id="rev" style="margin:22px 0 10px">Pembahasan</h2>`+
+ Q.map((q,i)=>{const a=d.ans[i],ok=a===q[2];
+  return `<div class="card q"><h3><span>${i+1}.</span>${esc(q[0])}</h3>`+
+  q[1].map((o,j)=>`<div class="opt static ${j===q[2]?'right':(j===a?'wrong':'')}"><span><b>${L[j]}.</b> ${esc(o)}${j===q[2]?' ✔':''}${j===a&&!ok?' ✘ (jawaban Anda)':''}</span></div>`).join("")+
+  `<div class="tag ${ok?'ok':'bad'}" style="margin-top:8px">${ok?'Benar':'Salah'} · Jawaban Anda: ${L[a]} · Kunci: ${L[q[2]]}</div><div class="exp"><b>Pembahasan:</b> ${esc(q[3])}</div></div>`}).join("");
+ window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
